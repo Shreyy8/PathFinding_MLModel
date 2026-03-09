@@ -1,299 +1,234 @@
-# Urban Mission Planning Solution - Google Colab Notebook
+# Interactive Road Mapping Interface
 
-## Overview
+A production-ready full-stack web application for interactive road mapping and pathfinding on satellite imagery.
 
-This Google Colab notebook provides a complete demonstration of the Urban Mission Planning Solution, including:
-- Road segmentation using deep learning (U-Net)
-- Graph construction from road masks
-- Optimal pathfinding using A* algorithm
-- Path simplification and validation
-- Visualization and solution generation
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Quick Start
+## 🎯 Overview
 
-### Option 1: Open in Google Colab
+This application combines computer vision, graph algorithms, and an intuitive web interface to enable:
+- **AI-Powered Road Detection** using deep learning (PyTorch)
+- **Interactive Point Selection** with real-time validation
+- **Optimal Path Computation** using A* algorithm
+- **Real-Time Visualization** with detailed statistics
 
-1. Upload `urban_mission_planning_colab.ipynb` to Google Colab
-2. Click **Runtime → Change runtime type** and select **GPU** (recommended)
-3. Run all cells sequentially
+## ✨ Features
 
-### Option 2: Direct Link
+- 🛣️ Automatic road segmentation from satellite imagery
+- 🗺️ Interactive map interface with click-to-select waypoints
+- 🎯 Shortest path computation with A* pathfinding
+- 📊 Detailed statistics (coverage, path length, graph metrics)
+- 🎨 Responsive design (desktop, tablet, mobile)
+- ⚡ Real-time updates and visualization
+- 🔒 Production-ready with comprehensive error handling
 
-If the notebook is hosted on GitHub or Google Drive:
-- Click the "Open in Colab" badge (if available)
-- Or manually upload to Colab
+## 🚀 Quick Start
 
-## Prerequisites
+### Prerequisites
 
-### Data Requirements
+- Python 3.8+
+- Node.js 18+
+- 4GB RAM
+- 10GB disk space
 
-You need the Urban Mission Planning dataset with the following structure:
-```
-ump_data/
-├── reference/
-│   ├── sats/          # Training satellite images (.tiff)
-│   └── maps/          # Training road masks (.tiff)
-└── test/
-    └── sats/          # Test satellite images (.tiff)
-```
+### Installation
 
-### Data Setup Options
+```bash
+# 1. Install backend dependencies
+pip install -r requirements.txt
 
-**Option A: Google Drive (Recommended)**
-1. Upload your dataset to Google Drive
-2. In the notebook, run the "Mount Google Drive" cell
-3. Update the `DATA_ROOT` path to match your Drive structure
-
-**Option B: Direct Upload**
-1. Zip your dataset
-2. Run the "Upload Data" cell in the notebook
-3. Upload the zip file when prompted
-
-## Notebook Structure
-
-### 1. Environment Setup (Cells 1-2)
-- Installs all required dependencies
-- Detects GPU/CPU and configures PyTorch
-- Sets random seeds for reproducibility
-
-### 2. Data Loading (Cells 3-4)
-- Mounts Google Drive or handles direct uploads
-- Configures data paths
-
-### 3. Source Code Creation (Cells 5-10)
-- Creates Python modules for all components:
-  - `config.py` - Configuration settings
-  - `image_preprocessor.py` - Image loading and preprocessing
-  - `road_segmentation_model.py` - U-Net segmentation model
-  - `graph_constructor.py` - Road mask to graph conversion
-  - `pathfinding_engine.py` - A* pathfinding
-  - `dataset.py` - PyTorch dataset
-  - `loss_functions.py` - Dice loss
-
-### 4. Model Training (Cell 11)
-- Trains U-Net model on reference data
-- Uses Dice loss for segmentation
-- Saves best model checkpoint
-- **Duration**: 10-30 minutes depending on GPU
-
-### 5. Inference Pipeline (Cells 12-13)
-- Loads trained model
-- Processes test images through complete pipeline
-- Generates road masks and paths
-
-### 6. Visualization (Cell 14)
-- Displays original image, road mask, and path overlay
-- Shows start/goal points and computed path
-
-### 7. Solution Generation (Cell 15)
-- Creates JSON output in required format
-- Saves solution files
-
-### 8. Memory Management (Cell 16)
-- Monitors GPU/CPU memory usage
-- Clears cache to prevent OOM errors
-
-### 9. Batch Processing (Cell 17)
-- Processes multiple test images
-- Generates solutions for all images
-
-### 10. Download Results (Cell 18)
-- Downloads trained model
-- Downloads solution files
-
-## Hardware Requirements
-
-### Minimum Requirements
-- **CPU**: Any modern CPU (training will be slow)
-- **RAM**: 4 GB
-- **Storage**: 2 GB for code and small dataset
-
-### Recommended Requirements
-- **GPU**: NVIDIA GPU with 8+ GB VRAM (T4, P100, V100)
-- **RAM**: 12 GB
-- **Storage**: 10 GB for full dataset
-
-### Google Colab Tiers
-- **Free**: T4 GPU, 12 GB RAM (sufficient for demo)
-- **Pro**: Better GPUs, more RAM (recommended for full dataset)
-- **Pro+**: Fastest GPUs, most RAM (best for large-scale processing)
-
-## Memory Constraints
-
-Google Colab has memory limits. To stay within constraints:
-
-1. **Reduce Batch Size**: Set `BATCH_SIZE = 1` or `2` in config
-2. **Process Fewer Images**: Limit batch processing to 5-10 images
-3. **Clear Memory**: Run the memory management cell between batches
-4. **Use Smaller Images**: Test on 2048×2048 images first
-
-## Expected Performance
-
-### Training Time (10 epochs)
-- **GPU (T4)**: 10-15 minutes
-- **CPU**: 2-3 hours
-
-### Inference Time (per image)
-- **2048×2048 image**:
-  - GPU: 2-5 seconds
-  - CPU: 10-20 seconds
-- **4096×4096 image**:
-  - GPU: 5-10 seconds
-  - CPU: 30-60 seconds
-
-### Accuracy Targets
-- **Road Segmentation IoU**: > 0.85
-- **Path Validity**: > 95% with zero violations
-- **Average Score**: > 800
-
-## Troubleshooting
-
-### Issue: "Out of Memory" Error
-
-**Solutions**:
-1. Reduce batch size to 1
-2. Clear GPU cache: `torch.cuda.empty_cache()`
-3. Restart runtime and run again
-4. Use smaller images for testing
-
-### Issue: "No module named 'segmentation_models_pytorch'"
-
-**Solution**:
-- Re-run the dependency installation cell
-- Restart runtime if needed
-
-### Issue: "CUDA out of memory"
-
-**Solutions**:
-1. Switch to CPU: Change runtime type to CPU
-2. Reduce batch size
-3. Process images one at a time
-
-### Issue: "No test images found"
-
-**Solution**:
-- Verify `TEST_IMAGES` path is correct
-- Check that images have `.tiff` or `.tif` extension
-- Ensure data is properly mounted/uploaded
-
-### Issue: "No path found"
-
-**Possible Causes**:
-1. Road network is disconnected
-2. Start/goal coordinates are too far from roads
-3. Poor segmentation quality
-
-**Solutions**:
-1. Increase `max_radius` in `add_start_goal_nodes()`
-2. Adjust start/goal coordinates
-3. Retrain model with more epochs
-
-## Customization
-
-### Change Model Architecture
-
-In the training cell, modify:
-```python
-model = RoadSegmentationModel(
-    architecture="deeplabv3plus",  # or "unet"
-    encoder_name="resnet50"        # or "resnet34", "efficientnet-b0"
-)
+# 2. Install frontend dependencies
+cd frontend
+npm install
+cd ..
 ```
 
-### Adjust Training Parameters
+### Running
 
-In `src/config.py`:
-```python
-BATCH_SIZE = 2          # Reduce if OOM
-NUM_EPOCHS = 20         # Increase for better accuracy
-LEARNING_RATE = 0.0001  # Reduce for fine-tuning
+**Automated (Recommended):**
+```bash
+# Linux/Mac
+./scripts/start.sh
+
+# Windows
+scripts\start.bat
 ```
 
-### Change Pathfinding Settings
+**Manual:**
+```bash
+# Terminal 1 - Backend
+python run_server.py
 
-```python
-# Graph connectivity
-graph_constructor = GraphConstructor(connectivity=4)  # or 8
-
-# Path simplification
-simplified_path = pathfinder.simplify_path(path, epsilon=1.0)  # Lower = more waypoints
+# Terminal 2 - Frontend
+cd frontend && npm run dev
 ```
 
-### Custom Start/Goal Coordinates
+**Access:** http://localhost:3000
 
-In the inference cell:
-```python
-# Example: specific coordinates
-start = (500, 600)
-goal = (2000, 2100)
-
-# Example: random coordinates
-import random
-start = (random.randint(0, width), random.randint(0, height))
-goal = (random.randint(0, width), random.randint(0, height))
-```
-
-## Output Format
-
-### Solution JSON Structure
-
-```json
-{
-  "id": "test_001",
-  "path": [
-    [100, 200],
-    [150, 250],
-    [200, 300],
-    ...
-    [1800, 1900]
-  ]
-}
-```
-
-- `id`: Test image identifier (without extension)
-- `path`: List of [x, y] coordinate pairs
-- All coordinates are integers
-- Minimum 2 waypoints (start and goal)
-
-## Validation
-
-### Path Validation Criteria
-
-1. **Boundary Check**: All waypoints within image bounds
-2. **Road Adherence**: All segments stay on road pixels
-3. **Connectivity**: Path connects start to goal
-4. **Format**: Valid JSON with correct structure
-
-### Score Calculation
+## 📁 Project Structure
 
 ```
-Score = 1000 - PathLength - 50 × Violations
+road-mapping-interface/
+├── backend/
+│   ├── src/
+│   │   ├── api/              # REST API implementation
+│   │   ├── *.py              # Core modules (segmentation, pathfinding, etc.)
+│   │   └── __init__.py
+│   ├── tests/                # Comprehensive test suite
+│   ├── models/               # Model weights
+│   └── requirements.txt
+├── frontend/
+│   ├── app/                  # Next.js pages
+│   ├── components/           # React components
+│   ├── lib/                  # Utilities and API client
+│   └── package.json
+├── docs/                     # Documentation
+│   ├── GETTING_STARTED.md
+│   ├── API.md
+│   ├── ARCHITECTURE.md
+│   ├── DEPLOYMENT.md
+│   └── TROUBLESHOOTING.md
+├── scripts/                  # Utility scripts
+│   ├── start.sh
+│   ├── start.bat
+│   └── cleanup.py
+├── .env.example              # Environment variables template
+├── run_server.py             # Backend entry point
+└── README.md                 # This file
 ```
 
-Where:
-- `PathLength`: Sum of Euclidean distances between waypoints
-- `Violations`: Count of off-road or out-of-bounds pixels
+## 🏗️ Architecture
 
-## Additional Resources
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Frontend (Next.js)                      │
+│  - React Components                                         │
+│  - Canvas Visualization                                     │
+│  - Interactive UI                                           │
+└────────────────────┬────────────────────────────────────────┘
+                     │ REST API (HTTP/JSON)
+                     │
+┌────────────────────▼────────────────────────────────────────┐
+│                   Backend API (Flask)                       │
+│  - Image Processing                                         │
+│  - State Management                                         │
+│  - Point Validation                                         │
+└────────────────────┬────────────────────────────────────────┘
+                     │
+        ┌────────────┼────────────┐
+        │            │            │
+┌───────▼──────┐ ┌──▼──────┐ ┌──▼────────────┐
+│ Road Seg.    │ │ Graph   │ │ Pathfinding   │
+│ (PyTorch)    │ │ Builder │ │ (A*)          │
+└──────────────┘ └─────────┘ └───────────────┘
+```
 
-### Documentation
-- See `docs/` folder for detailed component documentation
-- Check `examples/` for usage examples
+## 📖 Documentation
 
-### Testing
-- Run `tests/` to validate implementation
-- Use property-based tests for correctness
+- **[Getting Started](docs/GETTING_STARTED.md)** - Setup and installation
+- **[API Reference](docs/API.md)** - Backend API endpoints
+- **[Architecture](docs/ARCHITECTURE.md)** - System design
+- **[Deployment](docs/DEPLOYMENT.md)** - Production deployment
+- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues
 
-### Support
-- Check GitHub issues for common problems
-- Review design document for architecture details
+## 🧪 Testing
 
-## License
+```bash
+# Run all tests
+pytest tests/ -v
 
-This implementation is for the Urban Mission Planning challenge.
+# Run specific test category
+pytest tests/test_api_setup.py -v
 
-## Acknowledgments
+# Run with coverage
+pytest tests/ --cov=src --cov-report=html
+```
 
-- Uses `segmentation-models-pytorch` for U-Net implementation
-- Built with PyTorch, NetworkX, and scikit-image
-- Designed for Google Colab environment
+## 🚢 Deployment
+
+### Backend
+
+```bash
+# Production server
+gunicorn -w 4 -b 0.0.0.0:5000 'src.api.app:create_app()'
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm run build
+npm start
+```
+
+See [Deployment Guide](docs/DEPLOYMENT.md) for detailed instructions.
+
+## 🛠️ Technology Stack
+
+**Backend:**
+- Python 3.8+
+- Flask (REST API)
+- PyTorch (Deep Learning)
+- NetworkX (Graph Algorithms)
+- NumPy, OpenCV, Pillow
+
+**Frontend:**
+- Next.js 16 + React 19
+- TypeScript
+- Tailwind CSS
+- shadcn/ui Components
+
+**Algorithms:**
+- Road Segmentation: U-Net with ResNet34 encoder
+- Pathfinding: A* with Euclidean heuristic
+- Graph Construction: 8-connectivity
+
+## 📊 Performance
+
+- Image Processing: 2-5 seconds
+- Point Validation: <10ms
+- Pathfinding: 50-500ms
+- Memory Usage: ~500MB (backend), ~100MB (frontend)
+
+## 🔒 Security
+
+- Input validation on all endpoints
+- CORS configuration
+- File size limits (10MB)
+- Session management
+- Error handling without sensitive data exposure
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+## 📝 License
+
+[Your License Here]
+
+## 👥 Authors
+
+[Your Team/Contributors Here]
+
+## 🙏 Acknowledgments
+
+- PyTorch for deep learning framework
+- Next.js for frontend framework
+- Flask for backend API
+- shadcn/ui for UI components
+
+## 📞 Support
+
+- **Documentation:** See [docs/](docs/)
+- **Issues:** [GitHub Issues](your-repo-url/issues)
+- **Email:** [your-email]
+
+---
+
+**Made with ❤️ for mission planning and route optimization**

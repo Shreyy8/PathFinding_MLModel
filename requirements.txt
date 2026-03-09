@@ -39,6 +39,10 @@ pytest>=7.1.0,<9.0.0              # Unit testing framework
 hypothesis>=6.54.0,<7.0.0         # Property-based testing
 pytest-cov>=3.0.0,<6.0.0          # Test coverage reporting
 
+# Web Framework (Backend API)
+Flask>=2.3.0,<4.0.0               # Lightweight web framework for REST API
+Flask-CORS>=4.0.0,<5.0.0          # Cross-Origin Resource Sharing support
+
 ################################################################################
 # Version Notes:
 ################################################################################

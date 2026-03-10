@@ -213,43 +213,41 @@ const MapCanvas = forwardRef<MapCanvasRef, MapCanvasProps>(
     return (
       <div
         ref={containerRef}
-        className="relative w-full overflow-hidden rounded-lg border-2 border-border bg-secondary"
-        style={{ height: 'calc(100vh - 280px)', minHeight: '400px' }}
+        className="relative w-full overflow-auto rounded-lg border-2 border-border bg-secondary"
+        style={{ maxHeight: '70vh' }}
       >
         {!imageData && (
-          <div className="flex h-full items-center justify-center text-muted-foreground">
+          <div className="flex h-96 items-center justify-center text-muted-foreground">
             <p>Upload a satellite image to get started</p>
           </div>
         )}
         <div
-          className="relative h-full w-full flex items-center justify-center overflow-auto"
+          className="relative inline-block"
           style={{
-            display: imageData ? 'flex' : 'none',
+            display: imageData ? 'inline-block' : 'none',
           }}
         >
-          <div className="relative inline-block">
-            <canvas
-              ref={baseCanvasRef}
-              className="block max-h-full max-w-full"
-              style={{ imageRendering: 'auto', objectFit: 'contain' }}
-            />
-            <canvas
-              ref={overlayCanvasRef}
-              className="pointer-events-none absolute left-0 top-0 block max-h-full max-w-full"
-              style={{ imageRendering: 'auto', objectFit: 'contain' }}
-            />
-            <canvas
-              ref={pathCanvasRef}
-              className="pointer-events-none absolute left-0 top-0 block max-h-full max-w-full"
-              style={{ imageRendering: 'auto', objectFit: 'contain' }}
-            />
-            <canvas
-              ref={markerCanvasRef}
-              className="absolute left-0 top-0 block max-h-full max-w-full cursor-crosshair"
-              style={{ imageRendering: 'auto', objectFit: 'contain' }}
-              onClick={handleClick}
-            />
-          </div>
+          <canvas
+            ref={baseCanvasRef}
+            className="block max-w-full"
+            style={{ imageRendering: 'auto' }}
+          />
+          <canvas
+            ref={overlayCanvasRef}
+            className="pointer-events-none absolute left-0 top-0 block max-w-full"
+            style={{ imageRendering: 'auto' }}
+          />
+          <canvas
+            ref={pathCanvasRef}
+            className="pointer-events-none absolute left-0 top-0 block max-w-full"
+            style={{ imageRendering: 'auto' }}
+          />
+          <canvas
+            ref={markerCanvasRef}
+            className="absolute left-0 top-0 block max-w-full cursor-crosshair"
+            style={{ imageRendering: 'auto' }}
+            onClick={handleClick}
+          />
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-background/50">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />

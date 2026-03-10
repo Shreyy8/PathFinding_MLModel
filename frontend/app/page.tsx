@@ -2,7 +2,8 @@
 
 import { useState, useCallback, useRef } from 'react'
 import { Map, Github } from 'lucide-react'
-import { APIClient, type Statistics } from '@/lib/api-client'
+import { APIClient } from '@/lib/api-client'
+import type { Statistics } from '@/lib/api-client'
 import MapCanvas, { type MapCanvasRef } from '@/components/map-canvas'
 import ControlsPanel from '@/components/controls-panel'
 import StatisticsPanel from '@/components/statistics-panel'
@@ -10,6 +11,7 @@ import {
   NotificationsContainer,
   useNotifications,
 } from '@/components/notifications'
+import { LoadingScreen } from '@/components/loading-screen'
 
 type SelectionMode = 'idle' | 'selecting-start' | 'selecting-goal'
 
@@ -19,6 +21,9 @@ interface Point {
 }
 
 export default function RoadMappingPage() {
+  // Loading screen state
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+
   // State
   const [imageId, setImageId] = useState<string | null>(null)
   const [imageData, setImageData] = useState<string | null>(null)
@@ -60,7 +65,15 @@ export default function RoadMappingPage() {
         setImageId(response.image_id)
         setImageData(response.image_data)
         setRoadMaskData(response.road_mask_data)
-        setStatistics(response.statistics)
+        setStatistics({
+          image_width: response.width,
+          image_height: response.height,
+          road_coverage_percent: response.road_coverage_percent,
+          road_pixels: response.road_pixels,
+          total_pixels: response.total_pixels,
+          graph_nodes: response.graph_nodes,
+          graph_edges: response.graph_edges,
+        })
         setStartPoint(null)
         setGoalPoint(null)
         setPath(null)
@@ -118,8 +131,13 @@ export default function RoadMappingPage() {
 
             if (response.path) {
               setPath(response.path)
-              if (response.statistics) {
-                setStatistics(response.statistics)
+              // Update statistics with path information
+              if (response.path_length_pixels && response.path_waypoints) {
+                setStatistics(prev => prev ? {
+                  ...prev,
+                  path_length_pixels: response.path_length_pixels,
+                  path_waypoints: response.path_waypoints,
+                } : null)
               }
               setSelectionMode('idle')
               hideLoading(loadingId)
@@ -169,6 +187,12 @@ export default function RoadMappingPage() {
       setStartPoint(null)
       setGoalPoint(null)
       setPath(null)
+      // Clear path statistics but keep image statistics
+      setStatistics(prev => prev ? {
+        ...prev,
+        path_length_pixels: undefined,
+        path_waypoints: undefined,
+      } : null)
       setSelectionMode('selecting-start')
       showSuccess('Selection cleared')
       showInfo('Click on a road to set the start point')
@@ -181,6 +205,11 @@ export default function RoadMappingPage() {
     }
   }, [imageId, showSuccess, showError, showInfo])
 
+  // Show loading screen on initial load
+  if (isInitialLoading) {
+    return <LoadingScreen onLoadingComplete={() => setIsInitialLoading(false)} />
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Notifications */}
@@ -191,35 +220,29 @@ export default function RoadMappingPage() {
 
       {/* Header */}
       <header className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <Map className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold text-foreground">
-                Road Mapping Interface
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                Interactive pathfinding on satellite imagery
-              </p>
-            </div>
+        <div className="mx-auto max-w-7xl px-4 py-8">
+          <div className="flex flex-col items-center text-center">
+            <h1 
+              className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground tracking-tight"
+              style={{ 
+                fontFamily: 'var(--font-pixel), monospace',
+                textShadow: '3px 3px 0px rgba(0,0,0,0.4)',
+                letterSpacing: '0.08em',
+                lineHeight: '1.4'
+              }}
+            >
+              Road Mapping Interface
+            </h1>
+            <p className="mt-4 text-sm md:text-base text-muted-foreground tracking-wide">
+              Interactive pathfinding on satellite imagery
+            </p>
           </div>
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          >
-            <Github className="h-4 w-4" />
-            <span className="hidden sm:inline">View Source</span>
-          </a>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="mx-auto max-w-7xl px-4 py-4">
-        <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
+      <main className="mx-auto max-w-7xl px-4 py-6">
+        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           {/* Map Canvas */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -244,9 +267,8 @@ export default function RoadMappingPage() {
             />
           </div>
 
-          {/* Right Sidebar */}
-          <div className="space-y-4 lg:max-h-[calc(100vh-180px)] lg:overflow-y-auto">
-            {/* Controls Panel */}
+          {/* Controls and Statistics Panel */}
+          <div className="lg:sticky lg:top-6 lg:self-start space-y-6">
             <ControlsPanel
               hasImage={!!imageData}
               hasStartPoint={!!startPoint}
@@ -261,9 +283,10 @@ export default function RoadMappingPage() {
               onToggleOverlay={() => setShowOverlay(!showOverlay)}
               onOpacityChange={setOverlayOpacity}
             />
-
-            {/* Statistics Panel */}
-            <StatisticsPanel statistics={statistics} hasPath={!!path} />
+            <StatisticsPanel
+              statistics={statistics}
+              hasPath={!!path}
+            />
           </div>
         </div>
       </main>

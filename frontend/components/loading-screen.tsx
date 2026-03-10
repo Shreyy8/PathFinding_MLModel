@@ -27,34 +27,45 @@ export function LoadingScreen({ onLoadingComplete, minimumDuration = 3500 }: Loa
     "System ready"
   ]
 
-  // Generate random road patterns for each tile
+  // Generate deterministic road patterns for each tile (seeded for consistency)
   const tilePatterns = useMemo(() => {
     const patterns: string[][] = []
+    // Simple seeded random function for consistent patterns
+    const seededRandom = (seed: number) => {
+      const x = Math.sin(seed) * 10000
+      return x - Math.floor(x)
+    }
+    
     for (let i = 0; i < GRID_COLS * GRID_ROWS; i++) {
       const paths: string[] = []
-      const numPaths = Math.floor(Math.random() * 5) + 2
+      const numPaths = Math.floor(seededRandom(i * 7) * 5) + 2
       
       for (let j = 0; j < numPaths; j++) {
-        const pathType = Math.floor(Math.random() * 6)
+        const pathType = Math.floor(seededRandom(i * 13 + j * 17) * 6)
+        const r1 = seededRandom(i * 19 + j * 23)
+        const r2 = seededRandom(i * 29 + j * 31)
+        const r3 = seededRandom(i * 37 + j * 41)
+        const r4 = seededRandom(i * 43 + j * 47)
+        
         switch (pathType) {
           case 0:
-            paths.push(`M0,${20 + Math.random() * 60} L100,${20 + Math.random() * 60}`)
+            paths.push(`M0,${20 + r1 * 60} L100,${20 + r2 * 60}`)
             break
           case 1:
-            paths.push(`M${20 + Math.random() * 60},0 L${20 + Math.random() * 60},100`)
+            paths.push(`M${20 + r1 * 60},0 L${20 + r2 * 60},100`)
             break
           case 2:
-            paths.push(`M0,${Math.random() * 50} L100,${50 + Math.random() * 50}`)
+            paths.push(`M0,${r1 * 50} L100,${50 + r2 * 50}`)
             break
           case 3:
-            paths.push(`M0,${50 + Math.random() * 30} Q${50},${Math.random() * 100} 100,${50 + Math.random() * 30}`)
+            paths.push(`M0,${50 + r1 * 30} Q${50},${r2 * 100} 100,${50 + r3 * 30}`)
             break
           case 4:
-            paths.push(`M${30 + Math.random() * 40},0 L${30 + Math.random() * 40},100`)
-            paths.push(`M0,${30 + Math.random() * 40} L100,${30 + Math.random() * 40}`)
+            paths.push(`M${30 + r1 * 40},0 L${30 + r2 * 40},100`)
+            paths.push(`M0,${30 + r3 * 40} L100,${30 + r4 * 40}`)
             break
           case 5:
-            paths.push(`M50,100 L50,50 L${Math.random() > 0.5 ? 0 : 100},0`)
+            paths.push(`M50,100 L50,50 L${r1 > 0.5 ? 0 : 100},0`)
             break
         }
       }
@@ -63,19 +74,29 @@ export function LoadingScreen({ onLoadingComplete, minimumDuration = 3500 }: Loa
     return patterns
   }, [])
 
-  // Randomize tile reveal order
+  // Deterministic tile reveal order (seeded for consistency)
   const revealOrder = useMemo(() => {
     const indices = Array.from({ length: GRID_COLS * GRID_ROWS }, (_, i) => i)
+    // Simple seeded shuffle
+    const seededRandom = (seed: number) => {
+      const x = Math.sin(seed) * 10000
+      return x - Math.floor(x)
+    }
+    
     for (let i = indices.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
+      const j = Math.floor(seededRandom(i * 53) * (i + 1))
       ;[indices[i], indices[j]] = [indices[j], indices[i]]
     }
     return indices
   }, [])
 
-  // Pre-calculate tile brightness for consistency
+  // Pre-calculate tile brightness for consistency (deterministic)
   const tileBrightness = useMemo(() => {
-    return Array.from({ length: GRID_COLS * GRID_ROWS }, () => 0.4 + Math.random() * 0.4)
+    const seededRandom = (seed: number) => {
+      const x = Math.sin(seed) * 10000
+      return x - Math.floor(x)
+    }
+    return Array.from({ length: GRID_COLS * GRID_ROWS }, (_, i) => 0.4 + seededRandom(i * 61) * 0.4)
   }, [])
 
   useEffect(() => {
@@ -302,11 +323,11 @@ export function LoadingScreen({ onLoadingComplete, minimumDuration = 3500 }: Loa
             <div className="flex gap-8 pt-2 border-t border-white/10 w-full justify-center">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50" />
-                <span className="text-xs font-mono text-white/60">LAT: <span className="text-emerald-400">{(30.2672 + Math.sin(progress * 0.1) * 0.01).toFixed(4)}</span></span>
+                <span className="text-xs font-mono text-white/60">LAT: <span className="text-emerald-400">{(30.2672 + Math.sin(progress * 0.01) * 0.01).toFixed(4)}</span></span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-red-500 shadow-lg shadow-red-500/50" />
-                <span className="text-xs font-mono text-white/60">LON: <span className="text-red-400">{(-97.7431 + Math.cos(progress * 0.1) * 0.01).toFixed(4)}</span></span>
+                <span className="text-xs font-mono text-white/60">LON: <span className="text-red-400">{(-97.7431 + Math.cos(progress * 0.01) * 0.01).toFixed(4)}</span></span>
               </div>
             </div>
           </div>

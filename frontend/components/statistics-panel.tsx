@@ -40,11 +40,17 @@ export default function StatisticsPanel({
     )
   }
 
-  const formatNumber = (num: number) => {
+  const formatNumber = (num: number | undefined) => {
+    if (num === undefined || num === null || isNaN(num)) {
+      return '0'
+    }
     return num.toLocaleString()
   }
 
-  const formatDistance = (pixels: number) => {
+  const formatDistance = (pixels: number | undefined) => {
+    if (pixels === undefined || pixels === null || isNaN(pixels)) {
+      return '0 px'
+    }
     // Assuming 1 pixel ≈ 1 meter for display purposes
     if (pixels < 1000) {
       return `${pixels.toFixed(0)} px`
@@ -71,13 +77,13 @@ export default function StatisticsPanel({
             <div className="rounded-lg bg-secondary p-1.5">
               <div className="text-[10px] text-muted-foreground">Dimensions</div>
               <div className="font-medium text-xs">
-                {statistics.image_width} × {statistics.image_height}
+                {statistics?.image_width || 0} × {statistics?.image_height || 0}
               </div>
             </div>
             <div className="rounded-lg bg-secondary p-1.5">
               <div className="text-[10px] text-muted-foreground">Pixels</div>
               <div className="font-medium text-xs">
-                {formatNumber(statistics.total_pixels)}
+                {formatNumber(statistics?.total_pixels)}
               </div>
             </div>
           </div>
@@ -96,14 +102,14 @@ export default function StatisticsPanel({
               <div className="flex items-center justify-between">
                 <div className="text-[10px] text-muted-foreground">Coverage</div>
                 <Badge variant="secondary" className="font-mono text-[10px] h-4 px-1">
-                  {statistics.road_coverage_percent.toFixed(1)}%
+                  {(statistics?.road_coverage_percent || 0).toFixed(1)}%
                 </Badge>
               </div>
               <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-muted">
                 <div
                   className="h-full bg-primary transition-all"
                   style={{
-                    width: `${Math.min(statistics.road_coverage_percent, 100)}%`,
+                    width: `${Math.min(statistics?.road_coverage_percent || 0, 100)}%`,
                   }}
                 />
               </div>
@@ -112,13 +118,13 @@ export default function StatisticsPanel({
               <div className="rounded-lg bg-secondary p-1.5">
                 <div className="text-[10px] text-muted-foreground">Nodes</div>
                 <div className="font-medium text-xs">
-                  {formatNumber(statistics.graph_nodes)}
+                  {formatNumber(statistics?.graph_nodes)}
                 </div>
               </div>
               <div className="rounded-lg bg-secondary p-1.5">
                 <div className="text-[10px] text-muted-foreground">Edges</div>
                 <div className="font-medium text-xs">
-                  {formatNumber(statistics.graph_edges)}
+                  {formatNumber(statistics?.graph_edges)}
                 </div>
               </div>
             </div>
@@ -126,7 +132,7 @@ export default function StatisticsPanel({
         </div>
 
         {/* Path Statistics (only shown when path exists) */}
-        {hasPath && statistics.path_length_pixels !== undefined && (
+        {hasPath && statistics?.path_length_pixels !== undefined && (
           <>
             <Separator />
             <div className="space-y-1.5">
@@ -143,10 +149,10 @@ export default function StatisticsPanel({
                     <TrendingUp className="h-3 w-3 text-primary" />
                   </div>
                   <div className="mt-0.5 text-lg font-bold text-primary">
-                    {formatDistance(statistics.path_length_pixels)}
+                    {formatDistance(statistics?.path_length_pixels)}
                   </div>
                   <div className="text-[10px] text-muted-foreground">
-                    {statistics.path_length_pixels.toFixed(0)} pixels
+                    {(statistics?.path_length_pixels || 0).toFixed(0)} pixels
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-1.5 text-xs">
@@ -155,7 +161,7 @@ export default function StatisticsPanel({
                       Points
                     </div>
                     <div className="font-medium text-xs">
-                      {formatNumber(statistics.path_waypoints || 0)}
+                      {formatNumber(statistics?.path_waypoints || 0)}
                     </div>
                   </div>
                   <div className="rounded-lg bg-secondary p-1.5">
@@ -163,7 +169,7 @@ export default function StatisticsPanel({
                       Avg Seg
                     </div>
                     <div className="font-medium text-xs">
-                      {statistics.path_waypoints && statistics.path_waypoints > 1
+                      {statistics?.path_waypoints && statistics.path_waypoints > 1 && statistics?.path_length_pixels
                         ? (
                             statistics.path_length_pixels /
                             (statistics.path_waypoints - 1)

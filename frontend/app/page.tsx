@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { Map, Github } from 'lucide-react'
 import { APIClient } from '@/lib/api-client'
 import type { Statistics } from '@/lib/api-client'
@@ -11,7 +11,17 @@ import {
   NotificationsContainer,
   useNotifications,
 } from '@/components/notifications'
-import { LoadingScreen } from '@/components/loading-screen'
+import dynamic from 'next/dynamic'
+
+// Dynamic import for loading screen to avoid hydration issues
+const LoadingScreen = dynamic(() => import('@/components/loading-screen').then(mod => ({ default: mod.LoadingScreen })), {
+  ssr: false,
+  loading: () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
+      <div className="text-white">Loading...</div>
+    </div>
+  )
+})
 
 type SelectionMode = 'idle' | 'selecting-start' | 'selecting-goal'
 
@@ -23,6 +33,12 @@ interface Point {
 export default function RoadMappingPage() {
   // Loading screen state
   const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const [showLoadingScreen, setShowLoadingScreen] = useState(false)
+
+  // Only show loading screen on client
+  useEffect(() => {
+    setShowLoadingScreen(true)
+  }, [])
 
   // State
   const [imageId, setImageId] = useState<string | null>(null)
@@ -206,8 +222,17 @@ export default function RoadMappingPage() {
   }, [imageId, showSuccess, showError, showInfo])
 
   // Show loading screen on initial load
-  if (isInitialLoading) {
+  if (isInitialLoading && showLoadingScreen) {
     return <LoadingScreen onLoadingComplete={() => setIsInitialLoading(false)} />
+  }
+
+  // Fallback loading for SSR
+  if (isInitialLoading) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
+        <div className="text-white">Loading...</div>
+      </div>
+    )
   }
 
   return (

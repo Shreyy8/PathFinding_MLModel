@@ -82,13 +82,13 @@ export default function RoadMappingPage() {
         setImageData(response.image_data)
         setRoadMaskData(response.road_mask_data)
         setStatistics({
-          image_width: response.width,
-          image_height: response.height,
-          road_coverage_percent: response.road_coverage_percent,
-          road_pixels: response.road_pixels,
-          total_pixels: response.total_pixels,
-          graph_nodes: response.graph_nodes,
-          graph_edges: response.graph_edges,
+          image_width: response.statistics.image_width,
+          image_height: response.statistics.image_height,
+          road_coverage_percent: response.statistics.road_coverage_percent,
+          road_pixels: response.statistics.road_pixels,
+          total_pixels: response.statistics.total_pixels,
+          graph_nodes: response.statistics.graph_nodes,
+          graph_edges: response.statistics.graph_edges,
         })
         setStartPoint(null)
         setGoalPoint(null)
@@ -148,11 +148,11 @@ export default function RoadMappingPage() {
             if (response.path) {
               setPath(response.path)
               // Update statistics with path information
-              if (response.path_length_pixels && response.path_waypoints) {
+              if (response.statistics) {
                 setStatistics(prev => prev ? {
                   ...prev,
-                  path_length_pixels: response.path_length_pixels,
-                  path_waypoints: response.path_waypoints,
+                  path_length_pixels: response.statistics.path_length_pixels,
+                  path_waypoints: response.statistics.path_waypoints,
                 } : null)
               }
               setSelectionMode('idle')

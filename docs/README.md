@@ -94,9 +94,6 @@ See the [docs](.) folder for detailed documentation on:
 - Deployment strategies
 - Troubleshooting
 
-## License
-
-[Your License Here]
 
 ## Contributors
 

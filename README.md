@@ -208,27 +208,22 @@ See [Deployment Guide](docs/DEPLOYMENT.md) for detailed instructions.
 4. Add tests
 5. Submit a pull request
 
-## 📝 License
-
-[Your License Here]
 
 ## 👥 Authors
 
-[Your Team/Contributors Here]
+Shreyansh(Rens_7s)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - PyTorch for deep learning framework
 - Next.js for frontend framework
 - Flask for backend API
 - shadcn/ui for UI components
 
-## 📞 Support
+## Support
 
 - **Documentation:** See [docs/](docs/)
-- **Issues:** [GitHub Issues](your-repo-url/issues)
-- **Email:** [your-email]
+- **Issues:** for any issues contact me on my github or E-mail
+- **Email:** shreyansh8shourya@gmail.com
 
 ---
-
-**Made with ❤️ for mission planning and route optimization**

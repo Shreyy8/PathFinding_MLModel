@@ -453,13 +453,3 @@ Response (Invalid):
 
 4. **Upload an image and start mapping!**
 
-## 📚 Additional Resources
-
-- **Full Documentation:** See `README_FULLSTACK.md`
-- **Frontend Guide:** See `FRONTEND_INTEGRATION_GUIDE.md`
-- **API Spec:** See `.kiro/specs/interactive-road-mapping-interface/design.md`
-- **Requirements:** See `.kiro/specs/interactive-road-mapping-interface/requirements.md`
-
----
-
-**Questions?** Check the troubleshooting section in `README_FULLSTACK.md` or review the API documentation!
